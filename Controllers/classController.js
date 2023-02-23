@@ -15,16 +15,30 @@ exports.getAllClasses=(req,res,next)=>{
             next(err);
         })
 }
-
+function removeDuplicates(arr) {
+    return arr.filter((item, 
+        index) => arr.indexOf(item) === index);
+}
 
 exports.addClass=(request,response,next)=>{
         TeacherSchema.findOne({_id:request.body.supervisor},{_id:1})
             .then(data=>{
-                    if(data==null)
-                    {
-                        throw Error("Teacher not Found");
+                    if(data==null) throw Error("Teacher not Found");
+                    else{
+                        return ChildSchema.find({_id:{$in:request.body.children}},{_id:1})
                     }
-                    else
+            })
+            .then(data=>{
+                data = data.map(obj=>Number(obj.id));
+                request.body.children = request.body.children.map(id=>Number(id));
+                request.body.children = removeDuplicates(request.body.children);
+                if(data.length!=request.body.children.length){
+                    // console.log(request.body.children);
+                    // console.log(request.body.children.filter(n => !data.includes(n)));
+                    let rest = request.body.children.filter(n => !data.includes(n))
+                    throw Error(rest + " Childern not Found");
+                }
+                else
                     return new  ClassSchema({
                         _id:request.body.id,
                         name:request.body.name,
