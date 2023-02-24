@@ -36,6 +36,14 @@ exports.addTeacher=(request,response,next)=>{
 }
 
 exports.updateTeacher=(request,response)=>{
+
+    if ( request.role== "teacher" && request.body.id != request.id){
+        let error = new Error("Not Premited");
+        error.status= 403;
+        next(error);
+        return;
+   }
+
     let hash = request.body.password?
                 bcrypt.hashSync(request.body.password, salt)
                 :
@@ -70,9 +78,14 @@ exports.deleteTeacher=(request,res,next)=>{
 }
 
 
-exports.getTeacher=(request,response)=>{
+exports.getTeacher=(request,res,next)=>{
     TeachersSchema.findOne({_id:request.params.id})
         .then((data)=>{
+                if ( request.role== "teacher" && request.params.id != request.id){
+                     let error = new Error("Not Premited");
+                     error.status= 403;
+                     throw error;
+                }
                 res.status(200).json({data});
         })
         .catch(error=>{

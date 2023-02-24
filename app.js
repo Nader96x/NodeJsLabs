@@ -6,9 +6,13 @@ const mongoose=require("mongoose");
 const teacherRoute = require("./Routes/teacherRoute");
 const childRoute = require("./Routes/childRouter");
 const classRoute = require("./Routes/classRouter");
+const loginRoute = require("./Routes/loginRouter");
+
+const AuthMW = require("./Core/Auth/Auth");
+
 const server = express();
 const port = process.env.port||8080;
-
+process.env.SECRET_KEY = "p@$$w0rdHa$h1ng"
 
 mongoose.set('strictQuery', true);
 
@@ -35,6 +39,10 @@ server.use(morgan("dev"));
 server.use(express.json());
 server.use(express.urlencoded({extended:false}));
 
+// Login
+server.use(loginRoute);
+// Auth
+server.use(AuthMW);
 
 // Routes MW
 server.use(teacherRoute);

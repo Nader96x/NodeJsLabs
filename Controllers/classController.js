@@ -8,6 +8,8 @@ const TeacherSchema=mongoose.model("teachers");
 const ChildSchema=mongoose.model("childern");
 exports.getAllClasses=(req,res,next)=>{
     ClassSchema.find({})
+        .populate({path:"supervisor",select:{fullname:1}})
+        .populate({path:"children",select:{fullName:1}})
         .then(data=>{
             res.status(200).json({data});
         })
@@ -103,6 +105,8 @@ exports.deleteClass=(request,res,next)=>{
 exports.getClass=(request,response,next)=>{
     // response.status(200).json({data:request.params.id});
     ClassSchema.findOne({_id:request.params.id})
+        .populate({path:"supervisor",select:{fullname:1}})
+        .populate({path:"children",select:{fullName:1}})
         .then(data=>{
             response.status(200).json({data});
         })
