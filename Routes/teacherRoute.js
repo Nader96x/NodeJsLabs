@@ -43,7 +43,8 @@ const log = (req,res,next)=>{
     next();
 }
 const setImage = (req,res,next)=>{
-    req.body.image = req.file.path;
+    if (req.file && req.file.path)
+        req.body.image = req.file.path;
     next();
 }
 
